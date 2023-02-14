@@ -1318,8 +1318,11 @@ final class ResolveExpressionTypesPass implements CompilerFileSetPass.Topologica
         calculateAccessChainTypes(nullSafeAccessNode.getBase().getType(), childDataAccess);
         finishAssertNonNullOpNodeChain(dataAccess);
       }
-      // TODO(b/138252762): This should be nullable.
-      nullSafeAccessNode.setType(nullSafeAccessNode.getDataAccess().getType());
+      SoyType type = nullSafeAccessNode.getDataAccess().getType();
+      if (SoyTypes.isNullable(nullSafeAccessNode.getBase().getType())) {
+        type = SoyTypes.makeNullable(type);
+      }
+      nullSafeAccessNode.setType(type);
       tryApplySubstitution(nullSafeAccessNode);
     }
 
